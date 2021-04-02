@@ -50,21 +50,18 @@ int kc[] = {-2, -2, -1,  1,  2, 2, -1,  1};
 int dgr[] = {-1, -1,  1, 1};
 int dgc[] = { 1, -1, -1, 1};
 
-list<int>ans;
+vector<int>ans;
 vector<int>adj[111];
 bool vis[111];
 int kase = 1;
 
-void dfs(int u)
+struct comp
 {
-    if(vis[u]) return;
-    vis[u] = true;
-
-    for(int v: adj[u]) {
-        if(!vis[v]) dfs(v);
+    bool operator()(int a, int b)
+    {
+        return a > b;
     }
-    ans.pf(u);
-}
+};
 
 void solve()
 {
@@ -105,16 +102,32 @@ void solve()
         bool take[node+10];
         memset(take, false, sizeof take);
 
+        //priority_queue<int, vector<int>, greater<int> >pq;
+        /*
+        auto comp = [](int a, int b) {
+            return a > b;
+        };
+        */
+
+        priority_queue<int, vector<int>, comp>pq;
+
+
         for(int i = 0; i < node; i++) {
-            for(int j = 0; j < node; j++) {
-                if(!inDeg[j] && !take[j]) {
-                    take[j] = true;
-                    ans.pb(j);
-                    for(int x: adj[j]) {
-                        inDeg[x]--;
-                    }
-                    break;
-                }   
+            if(inDeg[i] == 0) {
+                pq.push(i);
+            }
+        }
+
+        while(!pq.empty()) {
+            int u = pq.top();
+            pq.pop();
+            ans.eb(u);
+
+            for(int v: adj[u]) {
+                inDeg[v]--;
+                if(inDeg[v] == 0) {
+                    pq.push(v);
+                }
             }
         }
 
